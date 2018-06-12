@@ -1,4 +1,4 @@
-package com.vizhuo.html;
+package com.lolkt.html;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
