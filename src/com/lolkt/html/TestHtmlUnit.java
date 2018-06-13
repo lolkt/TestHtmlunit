@@ -2,6 +2,10 @@ package com.lolkt.html;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,14 +19,16 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class TestHtmlUnit {
 
-	public static void main(String[] args)   {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String url = "http://live.500.com/";
 		String pageXml = getHtmlSource(url);
-		getBeanBy500(pageXml);
+		List<Map> list = getBeanBy500(pageXml);
+
+		System.out.println("333 " + list.toString());
 	}
 
-	private static String getHtmlSource(String url)  {
+	private static String getHtmlSource(String url) {
 		// 初始化浏览器对象
 		WebClient webClient = new WebClient(BrowserVersion.CHROME);
 		// 配置是否加载css和javaScript
@@ -48,24 +54,38 @@ public class TestHtmlUnit {
 			e.printStackTrace();
 		}
 
-		if(page==null) return "";
-//		String res = page.asText();
+		if (page == null)
+			return "";
+		// String res = page.asText();
 		String pageXml = page.asXml();
 		return pageXml;
 	}
 
-	public static void getBeanBy500(String html) {
- 
+	public static List<Map> getBeanBy500(String html) {
+
 		Document doc = Jsoup.parse(html);
 		Elements table = doc.getElementsByClass("bf_tablelist01");
 		Elements rows = table.select("tbody").get(0).children();
 
-		for (Element link : rows) {
-			System.out.println("11111  " + link.select("td").get(0).text());
-			Element spans = link.getElementsByClass("bf_op").first();
-			System.out.println(" " + spans.child(0).text());
-			System.out.println(" " + spans.child(1).text());
-			System.out.println(" " + spans.child(2).text());
+		List<Map> list = new ArrayList();
+		if (rows == null) {
+			return list;
 		}
+
+		for (Element link : rows) {
+			String title = link.select("td").get(0).text();
+			System.out.println("11111  " + title);
+			Element spans = link.getElementsByClass("bf_op").first();
+			String odds = spans.child(0).text() + "," + spans.child(1).text()
+					+ "," + spans.child(2).text();
+			System.out.println("222 " + odds);
+
+			Map map = new HashMap();
+			map.put("title", title);
+			map.put("odds", odds);
+			list.add(map);
+		}
+
+		return list;
 	}
 }
